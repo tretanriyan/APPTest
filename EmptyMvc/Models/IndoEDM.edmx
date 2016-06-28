@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="IndoModelNS.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="StoreMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="KodeDC" Type="varchar" MaxLength="50" />
+          <Property Name="NamaDC" Type="varchar" MaxLength="50" />
+          <Property Name="KodeToko" Type="varchar" MaxLength="50" />
+          <Property Name="NamaToko" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Username" Type="varchar" MaxLength="50" />
+          <Property Name="LastLogin" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="UserToken">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_UserToken_User">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="UserToken" Type="Self.UserToken" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserToken">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="IndoModelNSStoreContainer">
+          <EntitySet Name="StoreMaster" EntityType="Self.StoreMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserToken" EntityType="Self.UserToken" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_UserToken_User" Association="Self.FK_UserToken_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="UserToken" EntitySet="UserToken" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="IndoModelNS" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="StoreMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="KodeDC" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="NamaDC" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="KodeToko" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="NamaToko" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastLogin" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="UserTokens" Relationship="Self.FK_UserToken_User" FromRole="User" ToRole="UserToken" />
+        </EntityType>
+        <EntityType Name="UserToken">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="UserId" Type="Guid" />
+          <Property Name="CreateDate" Type="DateTime" Precision="3" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="Self.FK_UserToken_User" FromRole="UserToken" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_UserToken_User">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="UserToken" Type="Self.UserToken" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserToken">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="IndoEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="StoreMasters" EntityType="Self.StoreMaster" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="UserTokens" EntityType="Self.UserToken" />
+          <AssociationSet Name="FK_UserToken_User" Association="Self.FK_UserToken_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserToken" EntitySet="UserTokens" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="IndoModelNSStoreContainer" CdmEntityContainer="IndoEntities">
+          <EntitySetMapping Name="StoreMasters">
+            <EntityTypeMapping TypeName="IndoModelNS.StoreMaster">
+              <MappingFragment StoreEntitySet="StoreMaster">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="KodeDC" ColumnName="KodeDC" />
+                <ScalarProperty Name="NamaDC" ColumnName="NamaDC" />
+                <ScalarProperty Name="KodeToko" ColumnName="KodeToko" />
+                <ScalarProperty Name="NamaToko" ColumnName="NamaToko" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="IndoModelNS.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="LastLogin" ColumnName="LastLogin" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserTokens">
+            <EntityTypeMapping TypeName="IndoModelNS.UserToken">
+              <MappingFragment StoreEntitySet="UserToken">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

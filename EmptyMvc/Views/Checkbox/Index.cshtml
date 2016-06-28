@@ -1,0 +1,45 @@
+﻿<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+@{
+    
+    var Filter = ViewBag.Filter as EmptyMvc.Models.FilterBaseModel;
+    string dv = Filter.isRakSewa ? "" : "display:none";
+}
+@Filter.isRakSewa
+
+
+<form method="get" action="@Url.Action("Index")">
+    @Html.DropDownList("JenisSewa", new SelectList(ViewBag.jns, Filter.JenisSewa),"-Pilih Jenis-")
+    @Html.TextBox("KeyWord",Filter.KeyWord)
+        @{if (Filter.isRakSewa)
+        {
+        <input id="isRakSewa" checked name="isRakSewa" type="checkbox" value="true" onclick="showMe('div1')"  />
+        }
+          else
+          {
+            <input id="isRakSewa" name="isRakSewa" type="checkbox" value="true" onclick="showMe('div1')" />
+          }}
+
+
+    <div class="panel panel-primary" id="div1" style="display:none;max-width:300px">
+        <div class="panel-body">
+            Basic panel example
+            <input type="text" />
+        </div>
+    </div>
+    <button type="submit">Tes</button>
+</form>
+
+<script>
+    window.onload = function () {
+        showMe("div1");
+    };
+
+    function showMe(box) {
+        var chboxs = document.getElementsByName("isRakSewa");
+        var vis = "none";
+            if (chboxs[0].checked) {
+                vis = "block";              
+            }        
+        document.getElementById(box).style.display = vis;
+    }
+</script>
