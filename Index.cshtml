@@ -1,0 +1,138 @@
+﻿@model EmptyMvc.Report
+@{
+    var notoko = 0;
+    var lsdc = Model.LsDC;
+    var loopGTT=0;
+    var loopHari=0; 
+    var colspanDC=Model.LsHari.Count()+5;    
+}
+<table >
+        @*Header Table*@
+        <tr>
+            <th rowspan="2">NO</th>
+            <th rowspan="2">KODE TOKO</th>   
+            <th rowspan="2">Nama TOKO</th>        
+            <th colspan="@Model.LsHari.Count()" height="1">Tanggal</th>
+            <th colspan="2">Aktif</th>
+        </tr>        
+        <tr>
+            @foreach (var d in Model.LsHari) { <th>@d.Tanggal</th>}
+            <th>Buka IIS</th>
+            <th>Tidak Buka IIS</th>
+        </tr>  
+        @*Deatail Table*@        
+                @foreach (var dc in lsdc)
+                {
+                    notoko = 0;
+                    foreach (var t in dc.lsToko)
+                    {
+                        notoko++;
+                        if (notoko == 1)
+                        { <tr><td colspan="@colspanDC">@dc.KodeDC : @dc.NamaDC</td></tr>}                                                                                                                     
+                        <tr>
+                            <td valign="top" style="padding:3px 5px 3px 5px;">@notoko</td>
+                            <td valign="top" style="padding:3px 5px 3px 5px;">@t.KodeToko</td>
+                            <td valign="top" style="padding:3px 5px 3px 5px;" width="100">@t.NamaToko</td>
+                            @{loopHari = 0;}
+                            @foreach (var d in t.LsHari)
+                            {
+                                d.TotalLogin = d.TotalLogin + d.LsJam.Count();//Isi Total Login Perhari per toko
+                                dc.LsHari[loopHari].TotalLogin = dc.LsHari[loopHari].TotalLogin + d.LsJam.Count(); //Isi Total Login Perhari per DC
+                                //ISI Total Buka dan Tidak IIS Per Toko
+                                t.BukaIIS = t.BukaIIS + (d.LsJam.Count() == 0 ? 0 : 1);
+                                t.TakBukaIIS = t.TakBukaIIS + (d.LsJam.Count() == 0 ? 1 : 0);
+                                @printTD(d.LsJam);
+                                loopHari++;
+                            }
+
+                            <td rowspan="2" align="center">@t.BukaIIS</td>
+                            <td rowspan="2" align="center">@t.TakBukaIIS</td>
+                            @{dc.BukaIIS = dc.BukaIIS + t.BukaIIS; dc.TakBukaIIS = dc.TakBukaIIS + t.TakBukaIIS;}
+                        </tr >                                                
+                        <tr style="background-color:aquamarine">
+                            @*Print Total Login Per Bulan per toko*@                          
+                            @foreach (var xx in t.LsHari){t.TotalLogin = t.TotalLogin + xx.TotalLogin;}                           
+                            <td colspan="3">Subtotal Toko (@t.TotalLogin)</td>
+                            @*Print Total Login Perhari per toko*@
+                            @foreach (var xx in t.LsHari)
+                            {
+                                @printSub(xx.TotalLogin);
+                            }                        
+                        </tr>                                                                                          
+                    }
+
+                    
+                    <tr style="background-color:yellow">
+                        @*Print Total Login Per Bulan per DC*@
+                        @foreach (var xx in dc.LsHari) { dc.TotalLogin = dc.TotalLogin + xx.TotalLogin; }             
+                        <td colspan="3" >Sub Total DC (@dc.TotalLogin)</td>                           
+                        @{loopGTT = 0;}                     
+                        @foreach (var SS in dc.LsHari)
+                        {   //Print Total Login Perhari per DC
+                            @printSub(SS.TotalLogin);
+                            Model.LsHari[loopGTT].TotalLogin = Model.LsHari[loopGTT].TotalLogin + SS.TotalLogin;//Isi GrandTotal Login perhari dari keseluruhan dc
+                            loopGTT++;                    
+                        }
+                        <td align="center">@dc.BukaIIS </td>
+                        <td align="center">@dc.TakBukaIIS</td>
+
+                        @*Isi Grand Total Buka dan tidak buka IIS dari seluaruh DC*@
+                        @{
+                            Model.BukaIIS = Model.BukaIIS + dc.BukaIIS;
+                            Model.TakBukaIIS = Model.TakBukaIIS + dc.TakBukaIIS;
+                        }
+                    </tr>                    
+                }
+        
+
+        @*Print GrandTotal*@
+        <tr style="background-color:orange">            
+            @foreach (var xx in Model.LsHari) { Model.TotalLogin = Model.TotalLogin + xx.TotalLogin; }             
+            <td colspan="3" ><b>Grand Total (@Model.TotalLogin)</b></td>
+            @foreach (var xx in Model.LsHari)
+            {
+                @printSub(xx.TotalLogin);
+            }
+            <td align="center">@Model.BukaIIS</td>
+            <td align="center">@Model.TakBukaIIS</td>
+        </tr>        
+
+</table>
+
+@helper printTD(List<DateTime> d)
+{
+    //top left buttom right
+    <td valign="top" align="center" style="padding:3px 2px 3px 2px;" width="40">
+        @*<ul style="list-style-type: none; ">*@
+        @foreach (var h in d)
+        {
+            @h.ToString("HH:mm") <br />
+        }
+    </td>
+}
+
+@helper printSub(int sub)
+{
+    <td align="center">
+        @{
+            if (sub != 0)
+            {                <text>@sub</text>
+            }
+        }
+    </td>
+}
+
+<style>
+    table, td, th {
+        border: 1px solid black;
+    }
+
+    table {
+        border-collapse: collapse;
+        width:auto;       
+    }
+
+    th {
+        height: 50px;
+    }
+</style>
